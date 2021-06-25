@@ -6,7 +6,7 @@ import {
   validate,
   validate_pt
 } from 'https://cdn.jsdelivr.net/gh/marcodpt/validator/index.js'
-import {app} from 'https://unpkg.com/hyperapp'
+import {app} from 'https://cdn.jsdelivr.net/npm/hyperapp@2.0.18/index.min.js'
 import axios from
   'https://cdn.jsdelivr.net/npm/redaxios@0.4.1/dist/redaxios.module.js'
 import mustache from 'https://cdn.jsdelivr.net/npm/mustache@4.2.0/mustache.mjs'
@@ -28,7 +28,7 @@ const comp = language => {
   return (e, params) => {
     const resolved = {}
     const init = {}
-    const afterGet = params.afterGet || X => X
+    const afterGet = params.afterGet || (X => X)
 
     const resolver = state => {
       const D = []
@@ -59,16 +59,31 @@ const comp = language => {
       return [{...state}].concat(D)
     }
 
+    const onAction = (init, state) => {
+      if (init instanceof Array) {
+        return ({
+          ...state,
+          pending: false,
+          Data: init
+        })
+      } else {
+        return setInit(init)
+      }
+    }
+
     const submiter = (schema, submit) => submit == null ? null : state => {
+      if (state.pending) {
+        return state
+      }
       const D = []
-      const P = schema.properties
+      const P = schema.properties || {}
       state.Fields.forEach(F => {
         F.error = ""
       })
       const M = val({
         ...schema,
-        properties: Object.keys(P).map(key => {
-          return resolved[key] == null ? P[key] : {
+        properties: Object.keys(P).reduce((R, key) => {
+          R[key] = resolved[key] == null ? P[key] : {
             ...P[key],
             enum: state.Fields
               .filter(F => F.name === key)
@@ -76,11 +91,14 @@ const comp = language => {
                 O => typeof O == 'object' ? O.value : O)
               ), [])
           }
-        })
+          return R
+        }, {})
       }, state.model, (key, message) => {
+        console.log(`${key} ${message}`)
         state.Fields
           .filter(F => F.name === key && F.error === "")
           .forEach(F => {
+            console.log(F)
             F.error = message
           })
       })
@@ -95,9 +113,9 @@ const comp = language => {
         D.push([
           dispatch => {
             Promise.resolve().then(() => {
-              return submit(M)
+              return submit(M, state.Data)
             }).then(init => {
-              dispatch(state => setInit(init))
+              dispatch(state => onAction(init, state))
             })
           }
         ])
@@ -106,26 +124,42 @@ const comp = language => {
       return [{...state}].concat(D)
     }
 
-    const getInit = ({
+    const setInit = ({
       schema,
       alert,
       back,
       submit,
-      submitOnChange
+      watch,
+      messages
     }) => {
       const S = schema || {}
       const P = S.properties || {}
+      const B = S.default || {}
 
       return resolver({
         title: S.title,
         description: !S.description || alert ? null : S.description,
-        Data: !S.description || !alert ? null : {
+        Data: (!S.description || !alert ? [] : [{
           type: alert,
           data: S.description
-        },
-        back: back,
+        }]).concat(messages == null ? [] : messages.map(M => {
+          if (M.close === true) {
+            const X = {
+              type: M.type || 'info',
+              data: M.data
+            }
+            X.close = (state) => ({
+              ...state,
+              Data: Data.filter(d => d !== X)
+            })
+          } else {
+            return M
+          }
+        })),
+        back: back == null ? null : (state) =>
+          onAction(back(state.Data), state),
         model: Object.keys(P).reduce((M, key) => {
-          if (S.default[key] != null) {
+          if (B[key] != null) {
             M[key] = S.default[key]
           } else if (P[key].default != null) {
             M[key] = P[key].default
@@ -146,9 +180,13 @@ const comp = language => {
           step: P[name].multipleOf,
           change: (state, ev) => {
             state.model[name] = ev.target.value
-            return submitOnChange ?
-              submiter(S, submit)(state) :
-              resolver(state)
+            if (watch) {
+              state = {
+                ...state,
+                Data: watch(state.model, state.Data)
+              }
+            }
+            return resolver(state)
           }
         })),
         Actions: (S.links || []).map(link => ({
@@ -157,14 +195,14 @@ const comp = language => {
           type: link.type || 'light',
           title: link.title
         })),
-        submit: submitOnChange ? true : submiter(S, submit)
+        submit: submit ? submiter(S, submit) : watch ? true : null
       })
     }
 
     const emitter = createNanoEvents()
 
     app({
-      init: getInit(params),
+      init: setInit(params),
       view: view,
       node: e,
       subscriptions: () => [[
@@ -172,7 +210,10 @@ const comp = language => {
           const unbind = emitter.on('update', model => {
             requestAnimationFrame(() => dispatch(state => ({
               ...state,
-              model: model
+              model: {
+                ...state.model,
+                ...model
+              }
             })))
           })
           return () => unbind()
