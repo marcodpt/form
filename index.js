@@ -1,28 +1,27 @@
 import {
-  form,
-  form_pt
-} from 'https://cdn.jsdelivr.net/gh/marcodpt/views/index.js'
+  view,
+  view_pt
+} from './views/bootstrap5.js'
 import {
   validate,
   validate_pt
 } from 'https://cdn.jsdelivr.net/gh/marcodpt/validator/index.js'
-import {app} from 'https://cdn.jsdelivr.net/npm/hyperapp@2.0.18/index.min.js'
+import {
+  component
+} from 'https://cdn.jsdelivr.net/gh/marcodpt/component/index.js'
 import axios from
   'https://cdn.jsdelivr.net/npm/redaxios@0.4.1/dist/redaxios.module.js'
 import mustache from 'https://cdn.jsdelivr.net/npm/mustache@4.2.0/mustache.mjs'
-import {
-  createNanoEvents
-} from 'https://cdn.jsdelivr.net/npm/nanoevents@6.0.0/index.js'
 
 const render = (template, data) =>
   mustache.render('{{={ }=}}\n'+template, data)
 
 const comp = language => {
   var val = validate
-  var view = form
+  var vw = view
   if (language == 'pt') {
     val = validate_pt
-    view = form_pt
+    vw = view_pt
   }
 
   return (e, params) => {
@@ -199,38 +198,17 @@ const comp = language => {
       })
     }
 
-    const emitter = createNanoEvents()
-
-    app({
-      init: setInit(params),
-      view: view,
-      node: e,
-      subscriptions: () => [[
-        dispatch => {
-          const unbind = emitter.on('update', model => {
-            requestAnimationFrame(() => dispatch(state => ({
-              ...state,
-              model: {
-                ...state.model,
-                ...model
-              }
-            })))
-          })
-          return () => unbind()
-        }
-      ]]
-    })
-
-    return model => {
-      emitter.emit('update', model)
-    }
+    return component(e, vw, setInit(params), (state, model) => ({
+      ...state,
+      model: {
+        ...state.model,
+        ...model
+      }
+    }))
   }
 }
 
-const f = comp()
-const f_pt = comp('pt')
+const form = comp()
+const form_pt = comp('pt')
 
-export {
-  f as form,
-  f_pt as form_pt
-}
+export {form, form_pt}
