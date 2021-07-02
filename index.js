@@ -3,16 +3,17 @@ import {
   view_pt
 } from './views/bootstrap5.js'
 import {
+  loader,
   validate,
   validate_pt
-} from 'https://cdn.jsdelivr.net/gh/marcodpt/validator/index.js'
+} from '../validator/index.js'
 import {
   component
 } from 'https://cdn.jsdelivr.net/gh/marcodpt/component/index.js'
 import mustache from 'https://cdn.jsdelivr.net/npm/mustache@4.2.0/mustache.mjs'
 
 const render = (template, data) =>
-  mustache.render('{{={ }=}}\n'+template, data)
+  template == null ? null : mustache.render('{{={ }=}}\n'+template, data)
 
 const comp = language => {
   var val = validate
@@ -24,7 +25,6 @@ const comp = language => {
 
   return (e, params) => {
     const resolved = {}
-    const init = {}
 
     const resolver = state => {
       const D = []
@@ -58,6 +58,9 @@ const comp = language => {
     }
 
     const onAction = (init, state) => {
+      Object.keys(resolved).forEach(key => {
+        delete resolved[key]
+      })
       if (init instanceof Array) {
         return ({
           ...state,
@@ -69,35 +72,39 @@ const comp = language => {
       }
     }
 
-    const submiter = (schema, submit) => submit == null ? null : state => {
-      if (state.pending) {
-        return state
-      }
-      const D = []
+    const validator = (schema, state, ignore) => {
       const P = schema.properties || {}
       state.Fields.forEach(F => {
-        F.error = ""
+        F.error = ignore ? null : ""
       })
-      const M = val({
+      return val({
         ...schema,
         properties: Object.keys(P).reduce((R, key) => {
           R[key] = resolved[key] == null ? P[key] : {
             ...P[key],
             enum: state.Fields
               .filter(F => F.name === key)
-              .reduce((E, F) => E.concat((F.options || []).map(
-                O => typeof O == 'object' ? O.value : O)
+              .reduce((E, F) => E.concat((F.options || [])
+                .map(O => typeof O == 'object' ? O.value : O)
               ), [])
           }
           return R
         }, {})
       }, state.model, (key, message) => {
         state.Fields
-          .filter(F => F.name === key && F.error === "")
+          .filter(F => F.name === key && !F.error)
           .forEach(F => {
             F.error = message
           })
       })
+    }
+
+    const submitter = (schema, submit) => submit == null ? null : state => {
+      if (state.pending) {
+        return state
+      }
+      const D = []
+      const M = validator(schema, state)
 
       if (M == null) {
         state.blur = state => ({
@@ -130,7 +137,6 @@ const comp = language => {
     }) => {
       const S = schema || {}
       const P = S.properties || {}
-      const B = S.default || {}
 
       return resolver({
         title: S.title,
@@ -154,50 +160,48 @@ const comp = language => {
         })),
         back: back == null ? null : (state) =>
           onAction(back(state.Data), state),
-        model: Object.keys(P).reduce((M, key) => {
-          if (B[key] != null) {
-            M[key] = S.default[key]
-          } else if (P[key].default != null) {
-            M[key] = P[key].default
-          } else {
-            M[key] = null
-          }
-          return M
-        }, {}),
+        model: loader(params.schema, S.default),
         Fields: Object.keys(P).map(name => ({
           name: name,
           title: P[name].title,
           disabled: P[name].readOnly,
           options: P[name].href ? null : P[name].enum,
-          href: P[name].href,
+          href: watch || submit ? P[name].href :
+            render(P[name].href, S.default || {}),
           type: P[name].format || P[name].type,
           min: P[name].minimum,
           max: P[name].maximum,
           step: P[name].multipleOf,
           change: (state, ev) => {
-            state.model[name] = ev.target.value
+            const el = ev.target
+            if (el.tagName == 'input' && el.type == 'file') {
+              state.model[name] = el.files.length ? el.files : null
+            } else {
+              state.model[name] = el.value
+            }
+            const R = resolver(state)
             if (watch) {
-              state = {
-                ...state,
-                Data: watch(state.model, state.Data)
+              const M = validator(S, state, true)
+              if (M) {
+                watch(M)
               }
             }
-            return resolver(state)
+            return R
           }
         })),
         Actions: (S.links || []).map(link => ({
-          href: link.href,
+          href: render(link.href, S.default || {}),
           icon: link.icon,
           type: link.type || 'light',
           title: link.title
         })),
-        submit: submit ? submiter(S, submit) : watch ? true : null
+        submit: submit ? submitter(S, submit) : watch ? true : null
       })
     }
 
-    return component(e, vw, setInit(params), (state, model) => resolver({
+    return component(e, vw, onAction(params), (state, model) => resolver({
       ...state,
-      model: model
+      model: loader(params.schema, {...model})
     }))
   }
 }

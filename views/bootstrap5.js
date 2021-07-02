@@ -3,7 +3,7 @@ import {
   data,
   link,
   field
-} from 'https://cdn.jsdelivr.net/gh/marcodpt/views/index.js'
+} from '../../views/index.js'
 import translate from '../language.js'
 
 const f = (language) => (h, text) => {

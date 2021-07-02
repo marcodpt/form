@@ -1,4 +1,5 @@
 import resolver from './resolver.js'
+import submit from './submit.js'
 
 const schema = {
   type: "object",
@@ -41,6 +42,12 @@ const schema = {
       maximum: 1000000,
       multipleOf: 0.01
     },
+    since: {
+      type: 'integer',
+      title: 'Since',
+      default: 1625253201,
+      format: 'date'
+    },
     bio: {
       type: 'string',
       format: 'textarea',
@@ -59,25 +66,8 @@ const schema = {
   ]
 }
 
-const submit = M => new Promise(resolve => {
-  setTimeout(() => {
-    resolve({
-      schema: {
-        title: 'You submit me!',
-        description: JSON.stringify(M, undefined, 2)
-      },
-      alert: 'info',
-      back: () => ({
-        schema: schema,
-        submit: submit,
-        resolver: resolver
-      })
-    })
-  }, 1000)
-})
-
 export default {
   schema: schema,
-  submit: submit,
+  submit: submit(schema),
   resolver: resolver
 }
