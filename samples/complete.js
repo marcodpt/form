@@ -1,3 +1,5 @@
+import resolver from './resolver.js'
+
 const schema = {
   type: "object",
   title: "Personal Info",
@@ -19,18 +21,18 @@ const schema = {
       type: 'string',
       title: 'Country',
       default: 'cn',
-      href: 'data/countries.json'
+      href: 'countries'
     },
     city: {
       type: 'integer',
       title: 'City',
-      href: 'data/cities_{country}.json',
+      href: 'cities_{country}',
       default: 8
     },
     role: {
       type: 'string',
       title: 'Role',
-      href: 'data/roles.json'
+      href: 'roles'
     },
     salary: {
       type: 'number',
@@ -62,12 +64,13 @@ const submit = M => new Promise(resolve => {
     resolve({
       schema: {
         title: 'You submit me!',
-        description: JSON.stringify(M, undefined, 2),
+        description: JSON.stringify(M, undefined, 2)
       },
       alert: 'info',
       back: () => ({
         schema: schema,
-        submit: submit
+        submit: submit,
+        resolver: resolver
       })
     })
   }, 1000)
@@ -75,5 +78,6 @@ const submit = M => new Promise(resolve => {
 
 export default {
   schema: schema,
-  submit: submit
+  submit: submit,
+  resolver: resolver
 }

@@ -266,7 +266,6 @@ export default [
                       <select
                         class="form-control"
                         name="country"
-                        value="3"
                       >
                         <option
                           value="1"
@@ -279,7 +278,7 @@ export default [
                         <option
                           value="3"
                           label="Canada"
-                        ></option>
+                          selected></option>
                       </select>
                     </div>
                   </div>
@@ -351,7 +350,6 @@ export default [
                       <select
                         class="form-control"
                         name="country"
-                        value="3"
                       >
                         <option
                           value="1"
@@ -364,7 +362,7 @@ export default [
                         <option
                           value="3"
                           label="Canada"
-                        ></option>
+                          selected></option>
                       </select>
                     </div>
                   </div>

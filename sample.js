@@ -15,5 +15,17 @@ export default {
     watch,
     upload
   },
-  comp: form
+  comp: form,
+  updates: {
+    Brazil: {
+      country: "br",
+      city: 4,
+      salary: 1000,
+      name: "Dorival"
+    },
+    John: {
+      role: "sysadmin",
+      name: "John"
+    }
+  }
 }

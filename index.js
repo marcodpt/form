@@ -9,8 +9,6 @@ import {
 import {
   component
 } from 'https://cdn.jsdelivr.net/gh/marcodpt/component/index.js'
-import axios from
-  'https://cdn.jsdelivr.net/npm/redaxios@0.4.1/dist/redaxios.module.js'
 import mustache from 'https://cdn.jsdelivr.net/npm/mustache@4.2.0/mustache.mjs'
 
 const render = (template, data) =>
@@ -27,12 +25,11 @@ const comp = language => {
   return (e, params) => {
     const resolved = {}
     const init = {}
-    const afterGet = params.afterGet || (X => X)
 
     const resolver = state => {
       const D = []
       state.Fields.forEach((F, index) => {
-        if (F.href) {
+        if (F.href && params.resolver) {
           const url = render(F.href, state.model)
           if (resolved[F.name] !== url) {
             if (resolved[F.name] != null) {
@@ -42,10 +39,12 @@ const comp = language => {
             F.options = null
             D.push([
               dispatch => {
-                axios.get(url).then(res => {
+                Promise.resolve().then(() => {
+                  return params.resolver(url)
+                }).then(options => {
                   dispatch(state => {
                     if (resolved[F.name] === url) {
-                      state.Fields[index].options = afterGet(res.data)
+                      state.Fields[index].options = options
                     }
                     return {...state}
                   })
@@ -93,11 +92,9 @@ const comp = language => {
           return R
         }, {})
       }, state.model, (key, message) => {
-        console.log(`${key} ${message}`)
         state.Fields
           .filter(F => F.name === key && F.error === "")
           .forEach(F => {
-            console.log(F)
             F.error = message
           })
       })
@@ -198,12 +195,9 @@ const comp = language => {
       })
     }
 
-    return component(e, vw, setInit(params), (state, model) => ({
+    return component(e, vw, setInit(params), (state, model) => resolver({
       ...state,
-      model: {
-        ...state.model,
-        ...model
-      }
+      model: model
     }))
   }
 }

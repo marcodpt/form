@@ -1,4 +1,4 @@
-[
+export default [
   {"value": 1, "label": "New York"},
   {"value": 2, "label": "San Francisco"},
   {"value": 3, "label": "Chicago"},
