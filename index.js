@@ -6,7 +6,7 @@ import {
   loader,
   validate,
   validate_pt
-} from '../validator/index.js'
+} from 'https://cdn.jsdelivr.net/gh/marcodpt/validator/index.js'
 import {
   component
 } from 'https://cdn.jsdelivr.net/gh/marcodpt/component/index.js'
@@ -65,10 +65,10 @@ const comp = language => {
         return ({
           ...state,
           pending: false,
-          Data: init
+          Data: setData(init)
         })
       } else {
-        return setInit(init)
+        return init != null && typeof init == 'object' ? setInit(init) : state
       }
     }
 
@@ -127,6 +127,22 @@ const comp = language => {
       return [{...state}].concat(D)
     }
 
+    const setData = messages => messages == null ? [] : messages.map(M => {
+      if (M.close === true) {
+        const X = {
+          type: M.alert || 'info',
+          data: M.data
+        }
+        X.close = (state) => ({
+          ...state,
+          Data: state.Data.filter(d => d !== X)
+        })
+        return X
+      } else {
+        return M
+      }
+    })
+
     const setInit = ({
       schema,
       alert,
@@ -144,20 +160,7 @@ const comp = language => {
         Data: (!S.description || !alert ? [] : [{
           type: alert,
           data: S.description
-        }]).concat(messages == null ? [] : messages.map(M => {
-          if (M.close === true) {
-            const X = {
-              type: M.type || 'info',
-              data: M.data
-            }
-            X.close = (state) => ({
-              ...state,
-              Data: Data.filter(d => d !== X)
-            })
-          } else {
-            return M
-          }
-        })),
+        }]).concat(setData(messages)),
         back: back == null ? null : (state) =>
           onAction(back(state.Data), state),
         model: loader(params.schema, S.default),
@@ -174,8 +177,14 @@ const comp = language => {
           step: P[name].multipleOf,
           change: (state, ev) => {
             const el = ev.target
-            if (el.tagName == 'input' && el.type == 'file') {
-              state.model[name] = el.files.length ? el.files : null
+            if (el.tagName == 'INPUT' && el.type == 'file') {
+              state.model[name] = []
+              for (var i = 0; i < el.files.length; i++) {
+                state.model[name].push(el.files[i])
+              }
+              if (!state.model[name].length) {
+                state.model[name] = null
+              }
             } else {
               state.model[name] = el.value
             }
@@ -183,7 +192,10 @@ const comp = language => {
             if (watch) {
               const M = validator(S, state, true)
               if (M) {
-                watch(M)
+                const X = watch(M, state.Data)
+                if (X instanceof Array) {
+                  R[0].Data = onAction(X).Data
+                }
               }
             }
             return R

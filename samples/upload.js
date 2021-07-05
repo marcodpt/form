@@ -10,24 +10,16 @@ export default {
         default: "info"
       },
       files: {
-        type: "integer",
+        type: "array",
         format: "files"
       }
     },
     required: ['alert', 'files']
   },
-  back: () => {
-    console.log('back')
-    return []
-  },
-  watch: (M, Msg) => {
-    console.log('watch')
-    console.log(M)
-    console.log(Msg)
-    return Msg.concat((M.files || []).map(F => ({
-      data: F.name,
-      type: M.type,
-      close: true
-    })))
-  }
+  back: () => [],
+  watch: (M, Msg) => Msg.concat((M.files || []).map(F => ({
+    data: F.name,
+    alert: M.alert,
+    close: true
+  })))
 }
