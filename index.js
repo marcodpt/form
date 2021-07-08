@@ -153,6 +153,17 @@ const comp = language => {
     }) => {
       const S = schema || {}
       const P = S.properties || {}
+      const getType = type => {
+        if (type == 'text') {
+          return 'textarea'
+        } else if (type == 'integer') {
+          return 'number'
+        } else if (type == 'string') {
+          return 'text'
+        } else {
+          return type
+        }
+      } 
 
       return resolver({
         title: S.title,
@@ -171,7 +182,7 @@ const comp = language => {
           options: P[name].href ? null : P[name].enum,
           href: watch || submit ? P[name].href :
             render(P[name].href, S.default || {}),
-          type: P[name].format || P[name].type,
+          type: getType(P[name].format || P[name].type),
           min: P[name].minimum,
           max: P[name].maximum,
           step: P[name].multipleOf,
