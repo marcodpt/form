@@ -17,9 +17,13 @@ export default {
     required: ['alert', 'files']
   },
   back: () => [],
-  watch: (M, Msg) => Msg.concat((M.files || []).map(F => ({
-    data: F.name,
-    alert: M.alert,
-    close: true
-  })))
+  watch: (M, Msg) => new Promise(resolve => {
+    setTimeout(() => {
+      resolve(Msg.concat((M.files || []).map(F => ({
+        data: F.name,
+        alert: M.alert,
+        close: true
+      }))))
+    }, 1000)
+  })
 }

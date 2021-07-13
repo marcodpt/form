@@ -203,10 +203,17 @@ const comp = language => {
             if (watch) {
               const M = validator(S, state, true)
               if (M) {
-                const X = watch(M, state.Data)
-                if (X instanceof Array) {
-                  R[0].Data = onAction(X).Data
-                }
+                R.push([dispatch => {
+                  Promise.resolve().then(() => {
+                    return watch(M, state.Data)
+                  }).then(res => {
+                    dispatch(state => ({
+                      ...state,
+                      Data: res instanceof Array ?
+                        onAction(res).Data : state.Data
+                    }))
+                  })
+                }])
               }
             }
             return R
