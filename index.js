@@ -54,6 +54,23 @@ const comp = language => {
           }
         }
       })
+
+      if (params.watch) {
+        const M = validator(params.schema, state, true)
+        if (M) {
+          D.push([dispatch => {
+            Promise.resolve().then(() => {
+              return params.watch(M, state.Data)
+            }).then(res => {
+              dispatch(state => ({
+                ...state,
+                Data: res instanceof Array ?
+                  onAction(res).Data : state.Data
+              }))
+            })
+          }])
+        }
+      }
       return [{...state}].concat(D)
     }
 
@@ -200,22 +217,6 @@ const comp = language => {
               state.model[name] = el.value
             }
             const R = resolver(state)
-            if (watch) {
-              const M = validator(S, state, true)
-              if (M) {
-                R.push([dispatch => {
-                  Promise.resolve().then(() => {
-                    return watch(M, state.Data)
-                  }).then(res => {
-                    dispatch(state => ({
-                      ...state,
-                      Data: res instanceof Array ?
-                        onAction(res).Data : state.Data
-                    }))
-                  })
-                }])
-              }
-            }
             return R
           }
         })),
