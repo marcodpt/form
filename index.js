@@ -6,10 +6,8 @@ import {
   loader,
   validate,
   validate_pt
-} from 'https://cdn.jsdelivr.net/gh/marcodpt/validator/index.js'
-import {
-  component
-} from 'https://cdn.jsdelivr.net/gh/marcodpt/component/index.js'
+} from 'https://cdn.jsdelivr.net/gh/marcodpt/validator@0.0.1/index.js'
+import component from '../../index.js'
 import mustache from 'https://cdn.jsdelivr.net/npm/mustache@4.2.0/mustache.mjs'
 
 const render = (template, data) =>
