@@ -45,7 +45,7 @@ const f = (language) => (h, text) => {
             class: 'modal-title'
           }, text(title)),
           !back ? null : link({
-            type: 'close',
+            icon: 'times',
             click: back
           })
         ]),

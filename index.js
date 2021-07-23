@@ -31,7 +31,9 @@ const comp = language => {
         if (F.href && params.resolver) {
           const url = render(F.href, state.model)
           if (resolved[F.name] !== url) {
-            if (resolved[F.name] != null) {
+            if (resolved[F.name] != null && state.Fields.reduce((pass, X) => {
+              return pass && (X.name != F.name || !X.disabled)
+            }, true)) {
               state.model[F.name] = null
             }
             resolved[F.name] = url
@@ -229,10 +231,18 @@ const comp = language => {
       })
     }
 
-    return component(e, vw, onAction(params), (state, model) => resolver({
-      ...state,
-      model: loader(params.schema, {...model})
-    }))
+    return component(e, vw, onAction(params), (state, model) => {
+      const P = (params.schema || {}).properties || {}
+      return resolver({
+        ...state,
+        Fields: state.Fields.map(field => ({
+          ...field,
+          disabled: model[field.name] != null ? true : 
+            (P[field.name] || {}).readOnly
+        })),
+        model: loader(params.schema, {...model})
+      })
+    })
   }
 }
 

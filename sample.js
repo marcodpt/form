@@ -25,7 +25,8 @@ export default {
     },
     John: {
       role: "sysadmin",
-      name: "John"
+      name: "John",
+      country: "us"
     }
   }
 }
