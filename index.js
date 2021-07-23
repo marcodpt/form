@@ -237,8 +237,9 @@ const comp = language => {
         ...state,
         Fields: state.Fields.map(field => ({
           ...field,
-          disabled: model[field.name] != null ? true : 
-            (P[field.name] || {}).readOnly
+          disabled: model[field.name] != null && 
+            typeof state.submit == 'function' ?
+            true : (P[field.name] || {}).readOnly
         })),
         model: loader(params.schema, {...model})
       })
