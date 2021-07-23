@@ -28,7 +28,7 @@ const comp = language => {
     const resolver = state => {
       const D = []
       state.Fields.forEach((F, index) => {
-        if (F.href && params.resolver) {
+        if (F.href && params.resolver && state.submit) {
           const url = render(F.href, state.model)
           if (resolved[F.name] !== url) {
             if (resolved[F.name] != null && state.Fields.reduce((pass, X) => {
@@ -233,10 +233,6 @@ const comp = language => {
 
     return component(e, vw, onAction(params), (state, model) => {
       const P = (params.schema || {}).properties || {}
-      console.log({
-          ...state.model,
-          ...loader(params.schema, {...model})
-        })
       const M = loader(params.schema, {...model})
       return resolver({
         ...state,
