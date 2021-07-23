@@ -233,6 +233,11 @@ const comp = language => {
 
     return component(e, vw, onAction(params), (state, model) => {
       const P = (params.schema || {}).properties || {}
+      console.log({
+          ...state.model,
+          ...loader(params.schema, {...model})
+        })
+      const M = loader(params.schema, {...model})
       return resolver({
         ...state,
         Fields: state.Fields.map(field => ({
@@ -241,7 +246,12 @@ const comp = language => {
             typeof state.submit == 'function' ?
             true : (P[field.name] || {}).readOnly
         })),
-        model: loader(params.schema, {...model})
+        model: Object.keys(M).reduce((model, key) => {
+          if (M[key] != null) {
+            model[key] = M[key]
+          }
+          return model
+        }, {...state.model})
       })
     })
   }
