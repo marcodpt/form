@@ -81,9 +81,9 @@ export default [
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title">test form</h5>
-                <button
-                  class="btn-close"
-                ></button>
+                <span
+                  style="cursor:pointer"
+                ><i class="fas fa-times"></i></span>
               </div>
               <div class="modal-body">
                 <div class="text-center">
@@ -116,9 +116,9 @@ export default [
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title">alert</h5>
-                <button
-                  class="btn-close"
-                ></button>
+                <span
+                  style="cursor:pointer"
+                ><i class="fas fa-times"></i></span>
               </div>
               <div class="modal-body">
                 <div class="alert alert-danger" role="alert">
@@ -154,9 +154,9 @@ export default [
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title">confirm</h5>
-                <button
-                  class="btn-close"
-                ></button>
+                <span
+                  style="cursor:pointer"
+                ><i class="fas fa-times"></i></span>
               </div>
               <div class="modal-body">
                 <div class="alert alert-info" role="alert">
@@ -222,9 +222,9 @@ export default [
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title">fields</h5>
-                <button
-                  class="btn-close"
-                ></button>
+                <span
+                  style="cursor:pointer"
+                ><i class="fas fa-times"></i></span>
               </div>
               <div class="modal-body">
                 <form>
@@ -336,9 +336,9 @@ export default [
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title">watch</h5>
-                <button
-                  class="btn-close"
-                ></button>
+                <span
+                  style="cursor:pointer"
+                ><i class="fas fa-times"></i></span>
               </div>
               <div class="modal-body">
                 <form>
@@ -421,9 +421,9 @@ export default [
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title">static</h5>
-                <button
-                  class="btn-close"
-                ></button>
+                <span
+                  style="cursor:pointer"
+                ><i class="fas fa-times"></i></span>
               </div>
               <div class="modal-body">
                 <form>
@@ -515,9 +515,9 @@ export default [
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title">static</h5>
-                <button
-                  class="btn-close"
-                ></button>
+                <span
+                  style="cursor:pointer"
+                ><i class="fas fa-times"></i></span>
               </div>
               <div class="modal-body">
                 <div class="text-center">
@@ -582,9 +582,9 @@ export default [
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title">File upload</h5>
-                <button
-                  class="btn-close"
-                ></button>
+                <span
+                  style="cursor:pointer"
+                ><i class="fas fa-times"></i></span>
               </div>
               <div class="modal-body">
                 <span
@@ -660,9 +660,9 @@ export default [
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title">sample.txt</h5>
-                <button
-                  class="btn-close"
-                ></button>
+                <span
+                  style="cursor:pointer"
+                ><i class="fas fa-times"></i></span>
               </div>
               <div class="modal-body">
                 <span
@@ -693,9 +693,9 @@ export default [
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title">Girl in a jacket</h5>
-                <button
-                  class="btn-close"
-                ></button>
+                <span
+                  style="cursor:pointer"
+                ><i class="fas fa-times"></i></span>
               </div>
               <div class="modal-body">
                 <img
@@ -728,9 +728,9 @@ export default [
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title">audio sample</h5>
-                <button
-                  class="btn-close"
-                ></button>
+                <span
+                  style="cursor:pointer"
+                ><i class="fas fa-times"></i></span>
               </div>
               <div class="modal-body">
                 <audio
@@ -765,9 +765,9 @@ export default [
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title">video sample</h5>
-                <button
-                  class="btn-close"
-                ></button>
+                <span
+                  style="cursor:pointer"
+                ><i class="fas fa-times"></i></span>
               </div>
               <div class="modal-body">
                 <video
@@ -812,9 +812,9 @@ export default [
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title">confirm</h5>
-                <button
-                  class="btn-close"
-                ></button>
+                <span
+                  style="cursor:pointer"
+                ><i class="fas fa-times"></i></span>
               </div>
               <div class="modal-body">
                 <div class="alert alert-info" role="alert">
