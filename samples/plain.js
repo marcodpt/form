@@ -10,12 +10,30 @@ export default {
       age: {
         title: "Age"
       },
+      registered: {
+        type: "integer",
+        format: "date",
+        title: "Registered"
+      },
+      change: {
+        type: "integer",
+        format: "date",
+        title: "Password Change"
+      },
+      auth: {
+        type: "string",
+        format: "date",
+        title: "Auth"
+      },
       bio: {}
     },
     default: {
       id: 138,
       name: 'John',
       age: 35,
+      registered: 0,
+      change: 1622505600,
+      auth: '2021-06-13',
       bio: [
         'Hi! My name is John!',
         'I have an amazing twitter profile!',

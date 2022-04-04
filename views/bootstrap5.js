@@ -3,7 +3,7 @@ import {
   data,
   link,
   field
-} from 'https://cdn.jsdelivr.net/gh/marcodpt/views@0.0.1/index.js'
+} from 'https://cdn.jsdelivr.net/gh/marcodpt/views@0.0.2/index.js'
 import translate from '../language.js'
 
 const f = (language) => (h, text) => {
@@ -69,7 +69,8 @@ const f = (language) => (h, text) => {
                 class: 'col-'+(submit ? 'md-' : '')+'3'
               }, [
                 h('label', {
-                  class: 'form-label'
+                  class: 'form-label',
+                  title: f.description
                 }, text(f.title))
               ]),
               h('div', {
@@ -80,6 +81,7 @@ const f = (language) => (h, text) => {
                   value: model[f.name]
                 }) : data({
                   data: model[f.name],
+                  format: f.type,
                   href: f.href
                 }),
                 !f.error || !submit ? null : h('div', {

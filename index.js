@@ -6,7 +6,7 @@ import {
   loader,
   validate,
   validate_pt
-} from 'https://cdn.jsdelivr.net/gh/marcodpt/validator@0.0.1/index.js'
+} from 'https://cdn.jsdelivr.net/gh/marcodpt/validator@0.0.2/index.js'
 import component from 
   'https://cdn.jsdelivr.net/gh/marcodpt/component@0.0.1/index.js'
 import mustache from 'https://cdn.jsdelivr.net/npm/mustache@4.2.0/mustache.mjs'
@@ -46,6 +46,11 @@ const comp = language => {
                   dispatch(state => {
                     if (resolved[F.name] === url) {
                       state.Fields[index].options = options
+                    }
+                    const S = params.schema
+                    const v = state.defaults[F.name]
+                    if (options.filter(o => o.value == v).length) {
+                      state.model[F.name] = v
                     }
                     return {...state}
                   })
@@ -183,6 +188,8 @@ const comp = language => {
         }
       } 
 
+      const M = loader(params.schema, S.default)
+
       return resolver({
         title: S.title,
         description: !S.description || alert ? null : S.description,
@@ -192,13 +199,19 @@ const comp = language => {
         }]).concat(setData(messages)),
         back: back == null ? null : (state) =>
           onAction(back(state.Data), state),
-        model: loader(params.schema, S.default),
+        model: M,
+        defaults: {...M},
         Fields: Object.keys(P).map(name => ({
           name: name,
           title: P[name].title,
+          description: P[name].description,
           disabled: P[name].readOnly,
-          options: P[name].href ? null : P[name].enum,
-          href: watch || submit ? P[name].href :
+          options: (watch || submit) && P[name].label ? [{
+            value: M[name],
+            label: P[name].label
+          }] : P[name].href ? null : P[name].enum,
+          href: watch || submit ?
+            (P[name].label ? null : P[name].href) :
             render(P[name].href, S.default || {}),
           type: getType(P[name].format || P[name].type),
           min: P[name].minimum,

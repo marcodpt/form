@@ -9,7 +9,8 @@ const schema = {
       title: 'Name',
       type: 'string',
       minLength: 3,
-      maxLength: 10
+      maxLength: 10,
+      description: 'Just your name...'
     },
     age: {
       title: 'Age',
@@ -28,12 +29,20 @@ const schema = {
       type: 'integer',
       title: 'City',
       href: 'cities_{country}',
-      default: 8
+      default: 1
+    },
+    company: {
+      type: 'integer',
+      title: 'Company',
+      href: 'companies',
+      default: 3,
+      label: 'Some company'
     },
     role: {
       type: 'string',
       title: 'Role',
-      href: 'roles'
+      href: 'roles',
+      description: 'List of roles...'
     },
     salary: {
       type: 'number',
